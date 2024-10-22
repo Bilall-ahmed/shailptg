@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech and Video Generator</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Speech Converter</h1>
+        <textarea id="text-input" placeholder="Enter text here..." rows="5"></textarea>
+        <button id="generate-btn">Generate Audio</button>
+        <audio id="audio-player" controls style="display: none;"></audio>
+
+        <h1>Image to Video Generator</h1>
+        <input type="file" id="image-upload" multiple>
+        <button id="upload-btn">Generate Video</button>
+        <button id="generate-complete-video-btn">Generate Complete Video</button>
+        <br>
+        <video id="video-player" controls style="display: none;"></video>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Event listener for the audio generation button
+            document.getElementById('generate-btn').addEventListener('click', () => {
+                const text = document.getElementById('text-input').value.trim();
+
+                if (text === "") {
+                    alert("Please enter some text to convert.");
+                    return;
+                }
+
+                // Send a request to your backend to generate audio
+                fetch('/generate_audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const audioUrl = URL.createObjectURL(blob);
+                    const audioPlayer = document.getElementById('audio-player');
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.style.display = 'block'; // Ensure the player is visible
+                    audioPlayer.play();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to generate audio.');
+                });
+            });
+
+            // Event listener for the image upload button
+            document.getElementById('upload-btn').addEventListener('click', () => {
+                const input = document.getElementById('image-upload');
+                const files = input.files;
+
+                if (files.length === 0) {
+                    alert("Please upload at least one image.");
+                    return;
+                }
+
+                const formData = new FormData();
+                for (const file of files) {
+                    formData.append('images', file);
+                }
+
+                // Send a request to your backend to generate video
+                fetch('/generate_video', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const videoUrl = URL.createObjectURL(blob);
+                    const videoPlayer = document.getElementById('video-player');
+                    videoPlayer.src = videoUrl;
+                    videoPlayer.style.display = 'block'; // Ensure the player is visible
+                    videoPlayer.play();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to generate video.');
+                });
+            });
+
+            // Event listener for the complete video generation button
+            document.getElementById('generate-complete-video-btn').addEventListener('click', () => {
+                const input = document.getElementById('image-upload');
+                const files = input.files;
+
+                if (files.length === 0) {
+                    alert("Please upload at least one image.");
+                    return;
+                }
+
+                const formData = new FormData();
+                for (const file of files) {
+                    formData.append('images', file);
+                }
+
+                // Send a request to your backend to generate complete video with audio
+                fetch('/generate_complete_video', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const videoUrl = URL.createObjectURL(blob);
+                    const videoPlayer = document.getElementById('video-player');
+                    videoPlayer.src = videoUrl;
+                    videoPlayer.style.display = 'block'; // Ensure the player is visible
+                    videoPlayer.play();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to generate complete video.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
