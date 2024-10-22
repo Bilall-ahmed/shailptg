@@ -1,4 +1,6 @@
-Flask==2.0.3
+Flask==2.2.2
 gtts==2.2.3
 moviepy==1.0.3
 Pillow==8.4.0
+Werkzeug==2.0.3
+gunicorn==20.1.0
