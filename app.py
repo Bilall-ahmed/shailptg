@@ -102,4 +102,5 @@ def create_video(include_audio):
     return send_file(output_video_path, mimetype='video/mp4', as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
+
